@@ -17,6 +17,7 @@ dependencies:
   hooks_riverpod: ^1.0.3
   html_character_entities: ^1.0.0+1
   meta: ^1.7.0
+  enum_to_string: ^2.0.1
 
 
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -45,6 +47,12 @@ class QuizRepository extends BaseQuizRepository {
         }
       }
       return [];
-    } catch (err) {}
+    } on DioError catch (e) {
+      print('error');
+      throw Failure(message: e.response?.statusMessage ?? 'Something went wrong');
+    }on SocketException (e){
+      print(e);
+      throw const Failure(message: 'Please check your connection.');
+    };
   }
 }

@@ -6,9 +6,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quize_riverpod/repositories/base_quiz_repository.dart';
 
 import '../enums/difficulty.dart';
+import '../models/failure_model.dart';
 import '../models/question_model.dart';
 
 final dioProvider = Provider<Dio>((ref) => Dio());
+
+final quizRepositoryProvider =
+    Provider<QuizRepository>((ref) => QuizRepository((ref.read));
 
 class QuizRepository extends BaseQuizRepository {
   late final Reader _read;
@@ -42,8 +46,8 @@ class QuizRepository extends BaseQuizRepository {
       if (response.statusCode == 200) {
         final data = Map<String, dynamic>.from(response.data);
         final results = List<Map<String, dynamic>>.from(data['results'] ?? []);
-        if (results.isNotEmpty) {
-          return results.map((e) => Question.fromMap(e)).toString();
+        if (results.isNotEmpty)  {
+          return results.map((e) => Question.fromMap(e)).toList();
         }
       }
       return [];

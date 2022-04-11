@@ -24,4 +24,26 @@ class QuizState extends Equatable {
     required this.incorrect,
     required this.status,
   });
+
+  factory QuizState.initial() {
+    return const QuizState(
+      selectedAnswer: '',
+      correct: [],
+      incorrect: [],
+      status: QuizStatus.initial,
+    );
+  }
+  QuizState copyWith({
+    String selectedAnswer,
+    List<Question> correct,
+    List<Question> incorrect,
+    QuizStatus status,
+  }) {
+    return QuizState(
+      selectedAnswer: selectedAnswer ?? this.selectedAnswer,
+      correct: correct ?? this.correct,
+      incorrect: incorrect ?? this.incorrect,
+      status: status ?? this.status,
+    );
+  }
 }

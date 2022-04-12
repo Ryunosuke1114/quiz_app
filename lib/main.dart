@@ -71,14 +71,16 @@ class QuizScreen extends HookWidget {
           final QuizState = useProvider(quizControllerProvider.state);
           if (!quizState.answered) return const SizedBox.shrink();
           return CustomButton(
-            title: pageController.page.toInt() + 1 < questions.length,
+            title: pageController.page.toInt() + 1 < questions.length
+                ? 'Next Question'
+                : 'See Result',
             onTap: () {
               context
                   .read(quizControllerProvider)
                   .nextQuestion(questions, pageController.page!.toInt());
               if (pageController.page.toInt() + 1 < questions.length) {
                 pageController.nextPage(
-                  duration: const Duration(microseconds: 250),
+                  duration: const Duration(milliseconds: 250),
                   curve: Curves.linear,
                 );
               }

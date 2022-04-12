@@ -33,17 +33,26 @@ class QuizState extends Equatable {
       status: QuizStatus.initial,
     );
   }
+
+  @override
+  List<Object> get props => [
+        selectedAnswer,
+        correct,
+        incorrect,
+        status,
+      ];
+
   QuizState copyWith({
-    String selectedAnswer,
-    List<Question> correct,
-    List<Question> incorrect,
-    QuizStatus status,
+    required String selectedAnswer,
+    required List<Question> correct,
+    required List<Question> incorrect,
+    required QuizStatus status,
   }) {
     return QuizState(
-      selectedAnswer: selectedAnswer ?? this.selectedAnswer,
-      correct: correct ?? this.correct,
-      incorrect: incorrect ?? this.incorrect,
-      status: status ?? this.status,
+      selectedAnswer: selectedAnswer,
+      correct: correct,
+      incorrect: incorrect,
+      status: status,
     );
   }
 }

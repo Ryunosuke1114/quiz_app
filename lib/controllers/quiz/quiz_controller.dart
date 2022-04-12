@@ -17,12 +17,14 @@ class QuizController extends StateNotifier<QuizState> {
         selectedAnswer: answer,
         correct: state.correct..add(currentQuestion),
         status: QuizStatus.correct,
+        incorrect: [],
       );
     } else {
       state = state.copyWith(
         selectedAnswer: answer,
         incorrect: state.incorrect..add(currentQuestion),
         status: QuizStatus.incorrect,
+        correct: [],
       );
     }
     void nextQuestion(List<Question> questions, int currentIndex) {

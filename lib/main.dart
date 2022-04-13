@@ -2,10 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:html_character_entities/html_character_entities.dart';
 import 'package:quize_riverpod/models/failure_model.dart';
 import 'package:quize_riverpod/repositories/quiz_repository.dart';
 
 import 'controllers/quiz/quiz_controller.dart';
+import 'controllers/quiz/quiz_state.dart';
 import 'enums/difficulty.dart';
 import 'models/question_model.dart';
 
@@ -92,6 +94,21 @@ class QuizScreen extends HookWidget {
   }
 }
 
+Widget _buildBody(
+  BuildContext context,
+  PageController pageController,
+  List<Question> questions,
+) {
+  if (questions.isEmpty) return const QuizError(message: 'No questions found');
+  final quizState = useProvider(quizControllerProvider.state);
+  return quizState.status == QuizStatus.complete
+      ? QuizQuestions(state: quizState, questions: questions)
+      : QuizQuestions(
+          pageController: pageController,
+          state: quizState,
+          questions: questions);
+}
+
 class QuizError extends StatelessWidget {
   final String message;
 
@@ -160,6 +177,46 @@ class CustomButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class QuizQuestions extends StatelessWidget {
+  final QuizState state;
+  final List<Question> questions;
+  final PageController pageController;
+  const QuizQuestions(
+      {Key? key,
+      required this.state,
+      required this.questions,
+      required this.pageController})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      controller: pageController,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: questions.length,
+      itemBuilder: (BuildContext context, int index) {
+        final question = questions[index];
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Question ${index + 1} of ${questions.length}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(26.0, 16.0, 20.0, 12.0),
+              child: Text(),
+            ),
+          ],
+        );
+      },
     );
   }
 }

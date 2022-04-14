@@ -185,12 +185,14 @@ class QuizQuestions extends StatelessWidget {
   final QuizState state;
   final List<Question> questions;
   final PageController pageController;
+
   const QuizQuestions(
       {Key? key,
       required this.state,
       required this.questions,
       required this.pageController})
       : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return PageView.builder(
@@ -212,11 +214,115 @@ class QuizQuestions extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(26.0, 16.0, 20.0, 12.0),
-              child: Text(),
+              child: Text(
+                HtmlCharacterEntities.decode(question.question),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Divider(
+              color: Colors.grey[200],
+              height: 32.0,
+              thickness: 2.0,
+              indent: 20.0,
+              endIndent: 20.0,
+            ),
+            Column(
+              children: question.answers
+                  .map(
+                    (e) => AnswerCard(
+                      answer: e,
+                      isSelected: e == state.selectedAnswer,
+                      isCorrect: e == question.correctAnswer,
+                      isDisplayingAnswer: state.answered,
+                      onTap: () => context
+                          .read(quizControllerProvider)
+                          .submitAnswer(question, e),
+                    ),
+                  )
+                  .toList(),
             ),
           ],
         );
       },
+    );
+  }
+}
+
+class AnswerCard extends StatelessWidget {
+  final String answer;
+  final bool isSelected;
+  final bool isCorrect;
+  final bool isDisplayingAnswer;
+  final VoidCallback onTap;
+
+  const AnswerCard({
+    Key? key,
+    required this.answer,
+    required this.isSelected,
+    required this.isCorrect,
+    required this.isDisplayingAnswer,
+    required this.onTap,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+          vertical: 12.0,
+          horizontal: 20.0,
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 12.0,
+          horizontal: 20.0,
+        ),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: boxShadow,
+          border: Border.all(
+            color: isDisplayingAnswer
+                ? isCorrect
+                    ? Colors.green
+                    : isSelected
+                        ? Colors.red
+                        : Colors.white
+                : Colors.white,
+            width: 4.0,
+          ),
+          borderRadius: BorderRadius.circular(100.0),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
+                HtmlCharacterEntities.decode(answer),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: isDisplayingAnswer && isCorrect
+                      ? FontWeight.bold
+                      : FontWeight.w400,
+                ),
+              ),
+            ),
+            if (isDisplayingAnswer)
+              isCorrect
+                  ? const CircularIcon(icon: Icons.check, color: Colors.green)
+                  : isSelected
+                      ? const CircularIcon(
+                          icon: Icons.close,
+                          color: Colors.red,
+                        )
+                      : const SizedBox.shrink()
+          ],
+        ),
+      ),
     );
   }
 }

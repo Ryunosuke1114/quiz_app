@@ -34,6 +34,8 @@ class QuizController extends StateNotifier<QuizState> {
         status: currentIndex + 1 < questions.length
             ? QuizStatus.initial
             : QuizStatus.complete,
+        incorrect: [],
+        correct: [],
       );
       void reset() {
         state = QuizState.initial();

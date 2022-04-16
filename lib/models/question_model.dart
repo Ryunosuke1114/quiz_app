@@ -24,7 +24,7 @@ class Question extends Equatable {
         answers,
       ];
 
-  Question? fromMap(Map<String, dynamic> map) {
+  static Question? fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
     return Question(
       category: map['category'] ?? '',

@@ -15,7 +15,7 @@ final quizRepositoryProvider =
     Provider<QuizRepository>((ref) => QuizRepository((ref.read));
 
 class QuizRepository extends BaseQuizRepository {
-  late final Reader _read;
+  final Reader _read;
 
   QuizRepository(this._read);
 

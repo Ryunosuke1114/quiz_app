@@ -18,6 +18,8 @@ dependencies:
   html_character_entities: ^1.0.0+1
   meta: ^1.7.0
   enum_to_string: ^2.0.1
+  flutter_hooks: ^0.18.3
+  provider: ^6.0.2
 
 
 

@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-final quizQuestionProvider = FutureProvider.autoDispose<List<Question>>(
+final quizQuestionsProvider = FutureProvider.autoDispose<List<Question>>(
   (ref) => ref.watch(quizRepositoryProvider).getQuestions(
         numQuestions: 5,
         categoryId: Random().nextInt(24) + 9,
@@ -44,10 +44,10 @@ final quizQuestionProvider = FutureProvider.autoDispose<List<Question>>(
       ),
 );
 
-class QuizScreen extends HookWidget {
+class QuizScreen extends HookConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    final quizQuestions = useProvider(quizQuestionProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final quizQuestions = ref.watch(quizQuestionsProvider);
     final pageController = usePageController();
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -72,17 +72,17 @@ class QuizScreen extends HookWidget {
                   error is Failure ? error.message : 'something went wrong!'),
         ),
         bottomSheet: quizQuestions.maybeWhen(data: (questions) {
-          final QuizState = useProvider(quizControllerProvider.state);
+          final quizState = ref.watch(quizControllerProvider.state);
           if (!quizState.answered) return const SizedBox.shrink();
           return CustomButton(
-            title: pageController.page.toInt() + 1 < questions.length
+            title: pageController.page!.toInt() + 1 < questions.length
                 ? 'Next Question'
                 : 'See Result',
             onTap: () {
-              context
+              ref
                   .read(quizControllerProvider)
                   .nextQuestion(questions, pageController.page!.toInt());
-              if (pageController.page.toInt() + 1 < questions.length) {
+              if (pageController.page!.toInt() + 1 < questions.length) {
                 pageController.nextPage(
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.linear,
@@ -102,16 +102,20 @@ Widget _buildBody(
   List<Question> questions,
 ) {
   if (questions.isEmpty) return const QuizError(message: 'No questions found');
-  final quizState = useProvider(quizControllerProvider.state);
+  final quizState = ref.watch(quizControllerProvider.notifier);
   return quizState.status == QuizStatus.complete
-      ? QuizQuestions(state: quizState, questions: questions)
+      ? QuizQuestions(
+          state: quizState,
+          questions: questions,
+          pageController: pageController,
+        )
       : QuizQuestions(
           pageController: pageController,
           state: quizState,
           questions: questions);
 }
 
-class QuizError extends StatelessWidget {
+class QuizError extends ConsumerWidget {
   final String message;
 
   const QuizError({
@@ -120,7 +124,10 @@ class QuizError extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -135,7 +142,7 @@ class QuizError extends StatelessWidget {
           const SizedBox(height: 20.0),
           CustomButton(
             title: 'Retry',
-            onTap: () => context.refresh(quizRepositoryProvider),
+            onTap: () => ref.refresh(quizRepositoryProvider),
           ),
         ],
       ),
@@ -183,20 +190,23 @@ class CustomButton extends StatelessWidget {
   }
 }
 
-class QuizQuestions extends StatelessWidget {
+class QuizQuestions extends ConsumerWidget {
   final QuizState state;
   final List<Question> questions;
   final PageController pageController;
 
-  const QuizQuestions(
-      {Key? key,
-      required this.state,
-      required this.questions,
-      required this.pageController})
-      : super(key: key);
+  const QuizQuestions({
+    Key? key,
+    required this.state,
+    required this.questions,
+    required this.pageController,
+  }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     return PageView.builder(
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
@@ -240,7 +250,7 @@ class QuizQuestions extends StatelessWidget {
                       isSelected: e == state.selectedAnswer,
                       isCorrect: e == question.correctAnswer,
                       isDisplayingAnswer: state.answered,
-                      onTap: () => context
+                      onTap: () => ref
                           .read(quizControllerProvider)
                           .submitAnswer(question, e),
                     ),
@@ -269,6 +279,7 @@ class AnswerCard extends StatelessWidget {
     required this.isDisplayingAnswer,
     required this.onTap,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

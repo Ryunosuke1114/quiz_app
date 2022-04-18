@@ -4,7 +4,7 @@ import 'package:quize_riverpod/controllers/quiz/quiz_state.dart';
 import '../../models/question_model.dart';
 
 final quizControllerProvider =
-    StateNotifierProvider.autoDispose<QuizController>(
+    StateNotifierProvider.autoDispose<QuizController, dynamic>(
   (ref) => QuizController(),
 );
 

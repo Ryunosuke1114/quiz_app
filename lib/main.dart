@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:html_character_entities/html_character_entities.dart';
-import 'package:provider/provider.dart';
 import 'package:quize_riverpod/models/failure_model.dart';
 import 'package:quize_riverpod/repositories/quiz_repository.dart';
 
@@ -72,7 +71,7 @@ class QuizScreen extends HookConsumerWidget {
                   error is Failure ? error.message : 'something went wrong!'),
         ),
         bottomSheet: quizQuestions.maybeWhen(data: (questions) {
-          final quizState = ref.watch(quizControllerProvider.state);
+          final quizState = ref.read(quizControllerProvider);
           if (!quizState.answered) return const SizedBox.shrink();
           return CustomButton(
             title: pageController.page!.toInt() + 1 < questions.length
@@ -90,7 +89,7 @@ class QuizScreen extends HookConsumerWidget {
               }
             },
           );
-        }),
+        }, orElse: () {  }),
       ),
     );
   }

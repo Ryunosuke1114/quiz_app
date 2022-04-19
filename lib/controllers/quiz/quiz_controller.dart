@@ -28,18 +28,5 @@ class QuizController extends StateNotifier<QuizState> {
         correct: [],
       );
     }
-    void nextQuestion(List<Question> questions, int currentIndex) {
-      state = state.copyWith(
-        selectedAnswer: '',
-        status: currentIndex + 1 < questions.length
-            ? QuizStatus.initial
-            : QuizStatus.complete,
-        incorrect: [],
-        correct: [],
-      );
-      void reset() {
-        state = QuizState.initial();
-      }
-    }
   }
 }

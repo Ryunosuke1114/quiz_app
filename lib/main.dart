@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.yellow,
             bottomSheetTheme: const BottomSheetThemeData(
                 backgroundColor: Colors.transparent)),
-        home: QuizScreen(),
+        home: const QuizScreen(),
       ),
     );
   }
@@ -44,6 +44,8 @@ final quizQuestionsProvider = FutureProvider.autoDispose<List<Question>>(
 );
 
 class QuizScreen extends HookConsumerWidget {
+  const QuizScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final quizQuestions = ref.watch(quizQuestionsProvider);
@@ -89,7 +91,9 @@ class QuizScreen extends HookConsumerWidget {
               }
             },
           );
-        }, orElse: () {  }),
+        }, orElse: () {
+          return null;
+          }),
       ),
     );
   }
@@ -101,7 +105,7 @@ Widget _buildBody(
   List<Question> questions,
 ) {
   if (questions.isEmpty) return const QuizError(message: 'No questions found');
-  final quizState = ref.watch(quizControllerProvider.notifier);
+  final quizState = ref.watch(quizControllerProvider);
   return quizState.status == QuizStatus.complete
       ? QuizQuestions(
           state: quizState,

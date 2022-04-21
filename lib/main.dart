@@ -66,7 +66,7 @@ class QuizScreen extends HookConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: quizQuestions.when(
-          data: (questions) => _buildBody(context, pageController, questions),
+          data: (questions) => _buildBody(context, pageController, questions, ref),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, _) => QuizError(
               message:
@@ -103,6 +103,7 @@ Widget _buildBody(
   BuildContext context,
   PageController pageController,
   List<Question> questions,
+  WidgetRef ref,
 ) {
   if (questions.isEmpty) return const QuizError(message: 'No questions found');
   final quizState = ref.watch(quizControllerProvider);
